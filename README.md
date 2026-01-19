@@ -35,16 +35,9 @@ Tasks
     
 ## Your Next Steps:
 
-Now you have a well-organized project structure. Your next tasks should be:
-
+Well-organized project structure. Tasks:
 1. **Download the dataset** according to the instructions
 2. **Extract the data** into the `data/raw/` folder with proper session folders
 3. **Implement the descriptor** (start with ScanContext from the provided papers)
 4. **Test data loading** with the notebooks
 
-Would you like me to guide you through:
-1. Downloading and extracting the NCLT dataset?
-2. Implementing the ScanContext descriptor?
-3. Or starting with data exploration in the notebook?
-
-Which step would you like to tackle next?
