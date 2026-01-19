@@ -1,0 +1,46 @@
+# ==================== Dataset Files ====================
+data/raw/**/*.tar.gz
+data/raw/**/*.bin
+data/raw/**/*.csv
+data/raw/**/velodyne_data/
+data/raw/**/groundtruth/
+!data/raw/**/.gitkeep
+
+# Processed data
+data/processed/
+
+# Results
+results/plots/
+results/metrics/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+env/
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+*.tmp
+*.log

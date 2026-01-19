@@ -1,0 +1,14 @@
+# config/paths.yaml
+paths:
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  results: "results"
+  
+  # Will be populated after downloading
+  nclt:
+    sessions:
+      - "2012-01-08"
+      - "2012-01-15" 
+      - "2012-01-22"
+    velodyne: "velodyne_data"
+    ground_truth: "groundtruth"

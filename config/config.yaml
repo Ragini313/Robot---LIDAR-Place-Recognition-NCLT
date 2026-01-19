@@ -1,0 +1,27 @@
+# config/config.yaml
+project:
+  name: "AMR_Lab3_Place_Recognition"
+  dataset: "NCLT"
+  sessions: ["2012-01-08", "2012-01-15", "2012-01-22"]
+
+descriptor:
+  type: "ScanContext"  # You can implement others like M2DP, ISC, etc.
+  parameters:
+    num_sectors: 60
+    num_rings: 20
+    max_range: 80.0  # meters
+    
+matching:
+  similarity_metric: "cosine"  # Options: cosine, euclidean, l1
+  retrieval_method: "knn"  # Options: knn, radius_search
+  k_neighbors: 5
+  
+evaluation:
+  positive_threshold: 5.0  # meters for considering a match
+  negative_threshold: 20.0  # meters for considering non-match
+  sequence_test: true
+  cross_session_test: false
+  
+data:
+  downsample_rate: 10  # Use every 10th scan to reduce computation
+  max_scans_per_session: 1000  # Limit for testing
