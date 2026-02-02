@@ -1,0 +1,50 @@
+Intro:
+
+Implement a place recognition pipeline using LiDAR data from a publicly available dataset. The goal is to design a descriptor for LiDAR scans, implement a matching algorithm, and evaluate the system using standard performance metrics.
+
+
+
+Tasks:
+
+Descriptor Implementation
+
+Design and implement a descriptor that captures the geometric structure of a LiDAR scan.
+Matching Algorithm
+
+Implement a similarity measure to compare descriptors.
+Create a retrieval mechanism to find the most similar places in the database.
+
+
+Evaluation
+Define ground truth for place matches.
+
+
+
+Compute:
+
+Precision and Recall.
+F1-score.
+Average Precision (AP).
+ROC curve or PR curve.
+Analyze performance under different conditions (e.g., varying thresholds, different environments).
+
+
+Deliverables:
+
+Source code for descriptor and matching algorithm.
+A short report including:
+Description of your method.
+Evaluation results with plots (Precision-Recall curves, etc.).
+Discussion of strengths and weaknesses.
+
+
+
+
+Materials:
+https://robots.engin.umich.edu/nclt/
+http://ais.informatik.uni-freiburg.de/publications/papers/steder10icra.pdf
+https://ieeexplore.ieee.org/document/7759060
+https://dl.acm.org/doi/10.1109/IROS.2015.7353454
+
+
+

@@ -1,0 +1,14 @@
+{
+  "overall_metrics": {
+    "mean_precision": 0.41,
+    "mean_recall": 0.07785711443682458,
+    "mean_f1_score": 0.12986075798506277,
+    "mean_average_precision": 0.33842592592592596,
+    "std_precision": 0.4052571200279316,
+    "std_recall": 0.08193312240198844,
+    "std_f1_score": 0.13474510395422615,
+    "std_average_precision": 0.3437343960793144,
+    "num_queries": 30
+  },
+  "num_queries": 30
+}

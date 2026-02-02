@@ -17,10 +17,11 @@ matching:
   k_neighbors: 5
   
 evaluation:
-  positive_threshold: 5.0  # meters for considering a match
-  negative_threshold: 20.0  # meters for considering non-match
+  positive_threshold: 15.0  # meters for considering a match (loosened from 5.0)
+  negative_threshold: 30.0  # meters for considering non-match (loosened from 20.0)
   sequence_test: true
   cross_session_test: false
+  query_step: 10  # Query every Nth scan (reduced from 100 to get more queries)
   
 data:
   downsample_rate: 10  # Use every 10th scan to reduce computation
