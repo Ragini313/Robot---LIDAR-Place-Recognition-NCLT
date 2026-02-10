@@ -1,4 +1,4 @@
-# main.py
+# main.py - run this script to run Place Recognition Pipeline which uses scan context method
 import os
 import sys
 import yaml
@@ -32,14 +32,16 @@ def main():
     config = load_config()
     print(f"Project: {config['project']['name']}")
     
-    # Initialize data loader
+    # Initialize the data loader 
+    # my folder hierarchy is as follows: data/raw/2012-01-15/2012-01-25/velodyne_sync
+    # organise 3 (or more days from NCLT dataset according to folder hierarchy shown above to make sure code runs as expected)
     base_data_path = input("Enter path to NCLT dataset (or press Enter for default './data/raw'): ")
     if not base_data_path:
         base_data_path = "./data/raw"
     
     data_loader = NCLTDataLoader(base_data_path)
     
-    # Load data for each session
+    # Load the data for each session / day
     sessions_data = {}
     for session in config['project']['sessions']:
         try:
@@ -59,7 +61,7 @@ def main():
     print("\nData loading complete!")
     print(f"Loaded {len(sessions_data)} sessions")
     
-    # Initialize descriptor extractor
+    # Initialize the descriptor extractor
     descriptor_config = config['descriptor']
     descriptor = ScanContextDescriptor(
         num_sectors=descriptor_config['parameters']['num_sectors'],
@@ -68,7 +70,7 @@ def main():
     )
     print(f"\nInitialized {descriptor_config['type']} descriptor")
     
-    # Initialize retrieval system
+    # Initialize our retrieval system
     matching_config = config['matching']
     retrieval_system = PlaceRetrievalSystem(
         descriptor_type=descriptor_config['type'],
@@ -77,7 +79,7 @@ def main():
     )
     print(f"Initialized retrieval system with {matching_config['similarity_metric']} similarity")
     
-    # Extract descriptors and build database
+    # Extract the descriptors and build database
     print("\n=== Extracting Descriptors ===")
     database_descriptors = []
     database_poses = []
@@ -90,7 +92,7 @@ def main():
         synchronized_scans = session_data.get('synchronized_scans', [])
         
         if not synchronized_scans:
-            # Fallback: use velodyne_files directly
+            # Fallback: use velodyne_files directly - in case file hierarchy is wrong, or similar issues
             velodyne_files = session_data['velodyne_files']
             gt_data = session_data['ground_truth']
             
@@ -104,7 +106,7 @@ def main():
                     desc = descriptor.compute(point_cloud)
                     database_descriptors.append(desc)
                     
-                    # Get approximate pose (use first pose if available)
+                    # Get an approximate pose (use first pose if available)
                     if len(gt_data) > 0:
                         pose_row = gt_data.iloc[min(scan_idx * downsample_rate, len(gt_data) - 1)]
                         pose = {
@@ -162,7 +164,7 @@ def main():
     retrieval_system.add_descriptors(database_descriptors, database_metadata)
     print(f"Database size: {retrieval_system.get_database_size()} descriptors")
     
-    # Prepare query set
+    # Prepare our query set
     print(f"\n=== Preparing Query Set ===")
     eval_config = config['evaluation']
     
@@ -173,8 +175,8 @@ def main():
     query_metadata = []
     
     if eval_config.get('sequence_test', True):
-        # Use every Nth scan as query (skip temporal neighbors)
-        query_step = eval_config.get('query_step', 10)  # Query every Nth scan (configurable)
+        # Use every N-th scan as query (skip temporal neighbors)
+        query_step = eval_config.get('query_step', 10)  # Query every Nth scan (this is configurable)
         for i in range(0, len(database_descriptors), query_step):
             query_descriptors.append(database_descriptors[i])
             query_poses.append(database_poses[i])
@@ -214,7 +216,7 @@ def main():
     results_dir.mkdir(exist_ok=True)
     
     print(f"\n=== Saving Results ===")
-    # Save metrics to JSON
+    # Save metrics to JSON file - for other personal task
     results_file = results_dir / 'evaluation_results.json'
     with open(results_file, 'w') as f:
         # Convert numpy arrays to lists for JSON serialization
