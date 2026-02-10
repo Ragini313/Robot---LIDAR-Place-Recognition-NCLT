@@ -7,6 +7,7 @@ from pathlib import Path
 
 # Add src to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
+
 from matching.retrieval import PlaceRetrievalSystem
 
 
@@ -19,7 +20,7 @@ def compute_pose_distance(pose1: Dict[str, float], pose2: Dict[str, float]) -> f
         pose2: Second pose dictionary with 'x' and 'y' keys
         
     Returns:
-        Euclidean distance in meters
+        Euclidean distance in meters - Standard 2D Euclidean distance formula
     """
     x1, y1 = pose1.get('x', 0), pose1.get('y', 0)
     x2, y2 = pose2.get('x', 0), pose2.get('y', 0)
@@ -43,7 +44,10 @@ def define_ground_truth(
         negative_threshold: Distance threshold for negative match (meters)
         
     Returns:
-        Binary array: 1 for positive match, 0 for negative match, -1 for ambiguous
+        Binary array: 
+        1 for positive match, 
+        0 for negative match, 
+       -1 for ambiguous
     """
     labels = np.zeros(len(database_poses), dtype=int)
     
@@ -55,7 +59,7 @@ def define_ground_truth(
         elif distance >= negative_threshold:
             labels[i] = 0  # Negative match
         else:
-            labels[i] = -1  # Ambiguous (between thresholds)
+            labels[i] = -1  # Ambiguous (in-between thresholds)
     
     return labels
 
@@ -399,6 +403,7 @@ def evaluate_system(
             'num_queries': len(all_precisions)
         }
     else:
+         # Edge case: no valid queries
         results['overall_metrics'] = {
             'mean_precision': 0.0,
             'mean_recall': 0.0,
