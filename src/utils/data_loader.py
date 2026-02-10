@@ -29,7 +29,8 @@ class NCLTDataLoader:
         Returns:
             DataFrame with ground truth poses
         """
-        # Try groundtruth_YYYY-MM-DD.csv format first
+        # Try groundtruth_YYYY-MM-DD.csv format first - this is industry standard formatting 
+        # (...in case different dataset is being used with different formatting)
         gt_path = self.base_path / session / f'groundtruth_{session}.csv'
         if not gt_path.exists():
             # Fallback to groundtruth.csv
@@ -39,15 +40,15 @@ class NCLTDataLoader:
             raise FileNotFoundError(f"Ground truth file not found: {gt_path}")
         
         # Load ground truth data
-        # Format: timestamp, x, y, z, roll, pitch, yaw
+        # Format: timestamp, x, y, z, roll, pitch, yaw - did a visual check of the file to ensure right format
         gt_data = pd.read_csv(gt_path, header=None, low_memory=False)
         gt_data.columns = ['timestamp', 'x', 'y', 'z', 'roll', 'pitch', 'yaw']
         
-        # Convert all columns to numeric, forcing errors to NaN, then drop them
+        # Convert all columns to numeric, forcing errors to "NaN", then drop them
         for col in gt_data.columns:
             gt_data[col] = pd.to_numeric(gt_data[col], errors='coerce')
         
-        # Drop rows with NaN in essential columns
+        # Drop rows with "NaN" in essential columns
         gt_data = gt_data.dropna(subset=['x', 'y', 'timestamp'])
         
         return gt_data
@@ -62,6 +63,9 @@ class NCLTDataLoader:
         Returns:
             List of Path objects to .bin files
         """
+        ## I try on variety of paths just in case of different sessions / datasets have different folder structures 
+        # - just making sure to check every way/path in case i change placement of data folder due to space restrictions
+        
         # Try NCLT structure: YYYY-MM-DD_vel/YYYY-MM-DD/velodyne_sync/
         velodyne_path = self.base_path / session / f'{session}_vel' / session / 'velodyne_sync'
         if not velodyne_path.exists():
@@ -118,7 +122,7 @@ class NCLTDataLoader:
         y = raw_data[:, 1].astype(np.float32) * 0.005 - 100.0
         z = raw_data[:, 2].astype(np.float32) * 0.005 - 100.0
         
-        # Return as N x 3 array
+        # Return as a "N x 3" array
         return np.column_stack((x, y, z))
     
     def extract_timestamp_from_filename(self, filepath: Path) -> Optional[int]:
@@ -133,7 +137,7 @@ class NCLTDataLoader:
             Timestamp as integer, or None if extraction fails
         """
         try:
-            # Filename without extension should be the timestamp
+            # Filename without extension should be the timestamp - i did visually confirm this
             timestamp_str = filepath.stem
             return int(timestamp_str)
         except (ValueError, AttributeError):
@@ -164,7 +168,7 @@ class NCLTDataLoader:
             
             # Only include if timestamp difference is reasonable
             # NCLT timestamps are in microseconds, so 0.1 seconds = 100000 microseconds
-            # Use a more lenient threshold: 0.5 seconds = 500000 microseconds
+            # Used a more lenient threshold: 0.5 seconds = 500000 microseconds
             if time_diffs[closest_idx] < 500000:  # 0.5 seconds in microseconds
                 synchronized.append((vel_file, closest_pose))
         
