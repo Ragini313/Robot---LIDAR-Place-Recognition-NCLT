@@ -38,9 +38,10 @@ class ScanContextDescriptor:
         self.max_range = max_range
         self.height_feature = height_feature
         
-        # Precompute ring boundaries
+        # Precompute ring boundaries - helps us quickly assign points to rings
         self.ring_edges = np.linspace(0, max_range, num_rings + 1)
-        # Sector boundaries (angular)
+        
+        # Sector boundaries (angular) (0 to 2*pi radians)
         self.sector_edges = np.linspace(0, 2 * np.pi, num_sectors + 1)
     
     def compute(self, point_cloud: np.ndarray) -> np.ndarray:
@@ -53,7 +54,7 @@ class ScanContextDescriptor:
         Returns:
             ScanContext matrix (num_rings x num_sectors)
         """
-        # Preprocess point cloud
+        # Preprocess point cloud - to remove invalid points and clip points outside max_range
         points = preprocess_point_cloud(point_cloud, max_range=self.max_range)
         
         if len(points) == 0:
@@ -66,17 +67,17 @@ class ScanContextDescriptor:
         # Initialize descriptor matrix
         descriptor = np.zeros((self.num_rings, self.num_sectors))
         
-        # For mean feature, track counts
+        # For mean feature, track counts: need to count points per bin
         if self.height_feature == 'mean':
             counts = np.zeros((self.num_rings, self.num_sectors))
         
-        # Bin points into rings and sectors
+        # Bin (to loop through) points into rings and sectors
         for i, point in enumerate(points):
             # Find ring index
             ring_idx = np.digitize(r[i], self.ring_edges) - 1
             ring_idx = np.clip(ring_idx, 0, self.num_rings - 1)
             
-            # Find sector index
+            # Find which sector this point belongs to
             sector_idx = np.digitize(theta[i], self.sector_edges) - 1
             sector_idx = np.clip(sector_idx, 0, self.num_sectors - 1)
             
@@ -98,9 +99,9 @@ class ScanContextDescriptor:
                 descriptor[ring_idx, sector_idx] += z[i]
                 counts[ring_idx, sector_idx] += 1
         
-        # Normalize mean features
+        # Normalize the mean features
         if self.height_feature == 'mean':
-            # Compute mean by dividing sum by count (avoid division by zero)
+            # Compute mean by dividing sum by count (make sure to avoid division by zero)
             mask = counts > 0
             descriptor[mask] = descriptor[mask] / counts[mask]
         
@@ -115,7 +116,8 @@ class ScanContextDescriptor:
             descriptor: ScanContext matrix (num_rings x num_sectors)
             
         Returns:
-            Ring key vector (num_rings,)
+            Ring key vector (num_rings,) 
+            -> a compact 1D summary of the descriptor
         """
         return np.max(descriptor, axis=1)
     
@@ -129,6 +131,7 @@ class ScanContextDescriptor:
             
         Returns:
             Sector key vector (num_sectors,)
+            -> useful for estimating rotation
         """
         return np.max(descriptor, axis=0)
     
@@ -190,7 +193,7 @@ class ScanContextDescriptor:
                     best_similarity = distance
                     best_shift = shift
         
-        # For distance metrics, convert to similarity (negative distance)
+        # For distance metrics, convert to similarity (negative distance) i.e. convert distance to similarity by negating it
         if similarity_metric in ['euclidean', 'l1']:
             best_similarity = -best_similarity  # Negative distance as similarity
         
