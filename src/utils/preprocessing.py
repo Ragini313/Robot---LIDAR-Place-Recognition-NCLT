@@ -21,13 +21,13 @@ def preprocess_point_cloud(
     Returns:
         Preprocessed point cloud (N' x 3) [x, y, z]
     """
-    # Extract x, y, z coordinates (ignore reflectance if present)
+    # Extract x, y, z coordinates (ignore reflectance if present in dataset)
     if point_cloud.shape[1] >= 3:
         points = point_cloud[:, :3].copy()
     else:
         raise ValueError(f"Point cloud must have at least 3 columns, got {point_cloud.shape[1]}")
     
-    # Remove invalid points
+    # Remove the invalid points
     if remove_invalid:
         valid_mask = np.isfinite(points).all(axis=1)
         points = points[valid_mask]
@@ -35,7 +35,7 @@ def preprocess_point_cloud(
     if len(points) == 0:
         return np.empty((0, 3))
     
-    # Filter by range (distance from origin)
+    # Filter by range (as in distance from origin)
     distances = np.linalg.norm(points[:, :2], axis=1)  # 2D distance (x, y)
     range_mask = distances <= max_range
     points = points[range_mask]
@@ -43,7 +43,7 @@ def preprocess_point_cloud(
     if len(points) == 0:
         return np.empty((0, 3))
     
-    # Downsample if requested
+    # Downsample if required or to test result metrics
     if downsample is not None and downsample > 1:
         points = points[::downsample]
     
