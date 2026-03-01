@@ -34,9 +34,10 @@ The system transforms raw 3D LiDAR scans into a **Global Polar Descriptor** (Sca
 ```text
 ├── data/
 │   └── raw/                # NCLT Sessions (2012-01-08, 2012-01-15, 2012-01-22)
-├── notebooks/              # Development and Visualization notebooks
+├── notebooks/              # Development and Visualization notebooks for initial testing purposes
 ├── src/
 │   ├── descriptor.py       # ScanContext generation logic
 │   ├── matching.py         # Similarity and circular shift implementation
 │   └── evaluation.py       # Metrics calculation and plotting
 └── requirements.txt        # Project dependencies
+
